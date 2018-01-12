@@ -76,6 +76,7 @@ class CachedSession(OriginalSession):
         self._cache_allowable_methods = allowable_methods
         self._return_old_data_on_error = old_data_on_error
         self._is_cache_disabled = False
+        self._update_cache_enabled = False
         super(CachedSession, self).__init__()
 
     def send(self, request, **kwargs):
@@ -93,7 +94,10 @@ class CachedSession(OriginalSession):
                 self.cache.save_response(cache_key, response)
             response.from_cache = False
             return response
-
+        
+        if self._update_cache_enabled:
+            return send_request_and_cache_response()
+        
         response, timestamp = self.cache.get_response_and_time(cache_key)
         if response is None:
             return send_request_and_cache_response()
@@ -150,6 +154,22 @@ class CachedSession(OriginalSession):
             yield
         finally:
             self._is_cache_disabled = False
+            
+    @contextmanager
+    def update_cache(self):
+        """
+        Context manager for updating cache
+        ::
+
+            >>> s = CachedSession()
+            >>> with s.update_cache():
+            ...     s.get('http://httpbin.org/ip')
+        """
+        self._update_cache_enabled = True
+        try:
+            yield
+        finally:
+            self._update_cache_enabled = False
 
     def remove_expired_responses(self):
         """ Removes expired responses from storage
