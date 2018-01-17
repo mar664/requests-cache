@@ -16,6 +16,7 @@ from requests.hooks import dispatch_hook
 
 from requests_cache import backends
 from requests_cache.compat import basestring
+from requests.models import Request
 
 try:
     ver = tuple(map(int, requests.__version__.split(".")))
@@ -82,7 +83,8 @@ class CachedSession(OriginalSession):
     def request(self, method, url,
             params=None, data=None, headers=None, cookies=None, files=None,
             auth=None, timeout=None, allow_redirects=True, proxies=None,
-            hooks=None, stream=None, verify=None, cert=None, json=None):
+            hooks=None, stream=None, verify=None, cert=None, json=None, 
+            from_cache=True, update_cache=False):
         """Constructs a :class:`Request <Request>`, prepares it and sends it.
         Returns :class:`Response <Response>` object.
         :param method: method for the new :class:`Request` object.
@@ -143,6 +145,8 @@ class CachedSession(OriginalSession):
         send_kwargs = {
             'timeout': timeout,
             'allow_redirects': allow_redirects,
+            'from_cache': from_cache,
+            'update_cache': update_cache
         }
         send_kwargs.update(settings)
         resp = self.send(prep, **send_kwargs)
