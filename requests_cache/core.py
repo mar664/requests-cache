@@ -153,7 +153,7 @@ class CachedSession(OriginalSession):
         return resp
 
     def send(self, request, from_cache=True, update_cache=False, **kwargs):
-        print "FROM_CACHE:{0}, UPDATE_CACHE{1}".format(from_cache, update)
+        print "FROM_CACHE:{0}, UPDATE_CACHE:{1}".format(from_cache, update_cache)
         if (self._is_cache_disabled
             or request.method not in self._cache_allowable_methods) or (not from_cache and not update_cache):
             response = super(CachedSession, self).send(request, **kwargs)
