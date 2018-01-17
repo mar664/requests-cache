@@ -80,7 +80,7 @@ class CachedSession(OriginalSession):
         self._update_cache_enabled = False
         super(CachedSession, self).__init__()
       
-    def request(self, method, url,
+    def _request(self, method, url,
             params=None, data=None, headers=None, cookies=None, files=None,
             auth=None, timeout=None, allow_redirects=True, proxies=None,
             hooks=None, stream=None, verify=None, cert=None, json=None, 
@@ -196,7 +196,7 @@ class CachedSession(OriginalSession):
         return response
 
     def request(self, method, url, params=None, data=None, **kwargs):
-        response = super(CachedSession, self).request(
+        response = self._request(
             method, url,
             _normalize_parameters(params),
             _normalize_parameters(data),
